@@ -62,20 +62,21 @@ trait Routes extends HttpService with handler with Configuration{
       MysqlClient.map.foreach(i=>{
        val request:HttpRequest = Http("http://"+i._1+":"+i._2+"/listall")
         println(request)
-        var response = request.asString.body.toJson
+        val response = request.asString.body
+        println(response)
       //  response=response.toJson
-        val tmp = response.asInstanceOf[JsArray]
+      val tmp = response.parseJson.asInstanceOf[JsArray]
         complete(tmp.prettyPrint)
       })
 
       //tmp.elements.foreach(i=>i.asInstanceOf[JsNumber].))
       complete("")
 
-    }~path("listall")
-  {
+    }~path("listall") {
+    println("inside listall")
     var array = scala.collection.mutable.ArrayBuffer.empty[Int]
     array=listall
-
+println("......"+array)
     complete(""+array)
 
 

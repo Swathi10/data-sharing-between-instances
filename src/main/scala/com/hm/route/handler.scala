@@ -20,8 +20,10 @@ trait handler extends HttpService {
 //  buf+=22
 //  buf+=14
 def listall:ArrayBuffer[Int]={
+  println("method listall")
  buf
   }
+
 def add={
   post {
          entity(as[String]) {
