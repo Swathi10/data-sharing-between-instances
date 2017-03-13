@@ -2,6 +2,7 @@ package com.hm.route
 
 import com.hm.config.Configuration
 import com.hm.connector.MysqlClient
+import spray.json.{JsArray, JsNumber}
 
 import scala.collection.mutable
 import scalaj.http.HttpRequest
@@ -28,93 +29,121 @@ import spray.routing.HttpService
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
 import scalaj.http.Http
+
 /**
   * Created by shirin on 2/3/17.
   */
-trait Routes extends HttpService with handler with Configuration{
-/*var i = true
-  println("1.ADD 2.DELETE 3.TEST")
-  while(i) {
-  println("enter the option")
-  val temp:Int=scala.io.StdIn.readInt()
+trait Routes extends HttpService with handler with Configuration {
+  /*var i = true
+    println("1.ADD 2.DELETE 3.TEST")
+    while(i) {
+    println("enter the option")
+    val temp:Int=scala.io.StdIn.readInt()
 
-  temp match {
-    case 1 => add
-   case 2 => deleteElement
-    case 3 => test
-    case 4 => i=false
-    case _ => println("enter valid input")
-  }
-}*/
+    temp match {
+      case 1 => add
+     case 2 => deleteElement
+      case 3 => test
+      case 4 => i=false
+      case _ => println("enter valid input")
+    }
+  }*/
   val route =
-    path("add"){
-      add
+    path("add") {
+      println("inside add")
 
-  }~path("")
-  {
-    val rs=MysqlClient.executeQuery("insert into liveconn(servicehost,port) values('"+serviceHost+"',"+servicePort+")")
-    complete("instance added")
-  }~path("list") {
+      add
+//      update(a)
+//      complete(""+buf)
+
+    } ~ path("") {
+      val rs = MysqlClient.executeQuery("insert into liveconn(servicehost,port) values('" + serviceHost + "'," + servicePort + ")")
+      complete("instance added")
+    } ~ path("list") {
 
       MysqlClient.getLiveInstances
-     println(MysqlClient.map)
-//      var request:HttpRequest=Http("")
-      MysqlClient.map.foreach(i=>{
-       val request:HttpRequest = Http("http://"+i._1+":"+i._2+"/listall")
+      println(MysqlClient.map)
+      //      var request:HttpRequest=Http("")
+      MysqlClient.map.foreach(i => {
+        val request: HttpRequest = Http("http://" + i._1 + ":" + i._2 + "/listall")
         println(request)
         val response = request.asString.body
-        println(response)
-      //  response=response.toJson
-      val tmp = response.parseJson.asInstanceOf[JsArray]
-        complete(tmp.prettyPrint)
+        println("RESPONSE " + response)
+
+
+        val array = response.parseJson.asInstanceOf[JsArray].elements.map(_.asInstanceOf[JsNumber].value.toInt)
+
+        println("array" + array)
+
+
+        array.foreach(i => {
+          add1(i)
+          println("res" + (i))
+        })
+
+        //        println("res"+res)
+        //        complete(JsArray(res.map(JsNumber(_)).toVector).prettyPrint)
+        //  response=response.toJson
+        /* val tmp = response.parseJson.asInstanceOf[JsArray]
+           tmp.elements.foreach(i=>{
+             add1(i)
+           })
+           complete(tmp.prettyPrint)*/
       })
 
       //tmp.elements.foreach(i=>i.asInstanceOf[JsNumber].))
       complete("")
 
-    }~path("listall") {
-    println("inside listall")
-    var array = scala.collection.mutable.ArrayBuffer.empty[Int]
-    array=listall
-println("......"+array)
-    complete(""+array)
+    } ~ path("listall") {
+      println("inside listall")
+      var array = scala.collection.mutable.ArrayBuffer.empty[Int]
+      array = listall
+      println("......" + array)
 
 
-  }
-
-      // rs.map(i=>print(i._1+"  "+i._2))
-      /* val request: HttpRequest = Http("http://localhost:8080/add?e=56")
-       val response = request.asString.body
-       val tmp = response.parseJson.asInstanceOf[JsArray]
-         //tmp.elements.foreach(i=>i.asInstanceOf[JsNumber].))
-         complete(tmp.prettyPrint)
-      func*/
-
-      // complete(JsArray(a.map(i=>JsNumber(i)).toVector).prettyPrint)
+      complete(JsArray(array.map(JsNumber(_)).toVector).prettyPrint)
 
 
-      // ~path("delete"){
-//     deleteElement
-//
-//    }~path("test"){
-//      test
-//
-//    }~path("list") {
-//       list
-//
-////    }~ path("") {
-//
-//        get {
-//          respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
-//            complete {
-//              <html>
-//                <body>
-//                  <h1> welcome :)</h1>
-//                </body>
-//              </html>
-//            }
-//          }
-//        }
-//      }
-//    }
+    }~path("badd"){
+      //var e=
+        parameter("e")
+      //add1(e)
+      complete("")
+    }
+
+  // rs.map(i=>print(i._1+"  "+i._2))
+  /* val request: HttpRequest = Http("http://localhost:8080/add?e=56")
+   val response = request.asString.body
+   val tmp = response.parseJson.asInstanceOf[JsArray]
+     //tmp.elements.foreach(i=>i.asInstanceOf[JsNumber].))
+     complete(tmp.prettyPrint)
+  func*/
+
+  // complete(JsArray(a.map(i=>JsNumber(i)).toVector).prettyPrint)
+
+
+  // ~path("delete"){
+  //     deleteElement
+  //
+  //    }~path("test"){
+  //      test
+  //
+  //    }~path("list") {
+  //       list
+  //
+  ////    }~ path("") {
+  //
+  //        get {
+  //          respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
+  //            complete {
+  //              <html>
+  //                <body>
+  //                  <h1> welcome :)</h1>
+  //                </body>
+  //              </html>
+  //            }
+  //          }
+  //        }
+  //      }
+  //    }
 }

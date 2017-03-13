@@ -13,8 +13,8 @@ import spray.routing.HttpService
   */
 object MysqlClient extends Configuration{
   val map:mutable.HashMap[String,Int]={ new mutable.HashMap[String, Int]}
-
-  private val dbc = "jdbc:mysql://" + "127.0.0.1" + ":" + 3306 + "/" + "rest" + "?user=" + "root" + "&password=" + "root"
+  val map1:mutable.HashMap[String,Int]={ new mutable.HashMap[String, Int]}
+  private val dbc = "jdbc:mysql://" + "127.0.0.1" + ":" + 3306 + "/" + "mysql" + "?user=" + "root" + "&password=" + "root"
   classOf[com.mysql.jdbc.Driver]
   private var conn: Connection = DriverManager.getConnection(dbc)
 
@@ -50,6 +50,20 @@ object MysqlClient extends Configuration{
       println(rs.getString("servicehost"),rs.getInt("port"))
       map.put(rs.getString(2),rs.getInt(3))
       println(map)
+
+    }
+
+
+  }
+
+  def updateLiveInstances={
+
+    var rs=getResultSet("select * from liveconn where servicehost <>'"+serviceHost+"' OR port<>"+servicePort+" order by port" )
+
+    while(rs.next()){
+      println(rs.getString("servicehost"),rs.getInt("port"))
+      map1.put(rs.getString(2),rs.getInt(3))
+      println(map1)
 
     }
 

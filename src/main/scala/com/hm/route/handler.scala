@@ -6,14 +6,18 @@ import com.hm.connector.MysqlClient
 import spray.json.JsString
 import spray.routing.HttpService
 import spray.json._
+
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+import scalaj.http.{Http, HttpRequest}
 
 /**
   * Created by shirin on 2/3/17.
   */
 
 trait handler extends HttpService {
+//  var e = 0
+//  var a=0
   val buf = scala.collection.mutable.ArrayBuffer.empty[Int]
 //  buf+=5
 //  buf+=10
@@ -21,23 +25,42 @@ trait handler extends HttpService {
 //  buf+=14
 def listall:ArrayBuffer[Int]={
   println("method listall")
- buf
+ println(buf)
+  buf
+
   }
 
 def add={
+
   post {
          entity(as[String]) {
            body => {
              val json = body.parseJson.asJsObject
              val t = json.getFields("t").head.asInstanceOf[JsString].value.toInt
-            buf+=t
+            //a=t
+             buf+=t
+
            }
+
              complete("elements in the buffer are"+buf)
          }
   }
 }
+def add1(num : Int)={
+  buf+=num
+  println("add1"+buf)
+}
 
-
+def update(num:Int) ={
+ // e=num
+  MysqlClient.updateLiveInstances
+  MysqlClient.map1.foreach(i => {
+    val request: HttpRequest = Http("http://" + i._1 + ":" + i._2 + "/badd?e="+num+"")
+    println(request)
+    val response = request.asString.body
+    println("RESPONSE " + response)
+    complete("")})
+}
 }
 //  //val res: ArrayBuffer[Int] = ArrayBuffer(1,2,3,4,78,43,80)
 // /* println("enter the size")

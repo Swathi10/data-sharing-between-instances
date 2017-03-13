@@ -14,7 +14,7 @@ trait Configuration {
   lazy val serviceHost = Try(config.getString("service.host")).getOrElse("localhost")
 
 
-  lazy val servicePort = Try(config.getInt("service.port")).getOrElse(8083)
+  lazy val servicePort = 8085
 
 
   lazy val dbHost = Try(config.getString("db.host")).getOrElse("localhost")
@@ -23,7 +23,7 @@ trait Configuration {
   lazy val dbPort = Try(config.getInt("db.port")).getOrElse(3306)
 
 
-  lazy val dbName = Try(config.getString("db.name")).getOrElse("rest")
+  lazy val dbName = Try(config.getString("db.name")).getOrElse("mysql")
 
 
   lazy val dbUser = Try(config.getString("db.user")).toOption.orNull
