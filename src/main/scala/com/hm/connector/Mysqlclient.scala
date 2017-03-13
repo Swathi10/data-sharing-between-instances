@@ -13,7 +13,7 @@ import spray.routing.HttpService
   */
 object MysqlClient extends Configuration{
   val map:mutable.HashMap[String,Int]={ new mutable.HashMap[String, Int]}
-  val map1:mutable.HashMap[String,Int]={ new mutable.HashMap[String, Int]}
+  val map1:mutable.HashMap[Int,String]={ new mutable.HashMap[Int,String]}
   private val dbc = "jdbc:mysql://" + "127.0.0.1" + ":" + 3306 + "/" + "mysql" + "?user=" + "root" + "&password=" + "root"
   classOf[com.mysql.jdbc.Driver]
   private var conn: Connection = DriverManager.getConnection(dbc)
@@ -62,8 +62,8 @@ object MysqlClient extends Configuration{
 
     while(rs.next()){
       println(rs.getString("servicehost"),rs.getInt("port"))
-      map1.put(rs.getString(2),rs.getInt(3))
-      println(map1)
+      map1.put(rs.getInt(3),rs.getString(2))
+      println("map1"+map1)
 
     }
 

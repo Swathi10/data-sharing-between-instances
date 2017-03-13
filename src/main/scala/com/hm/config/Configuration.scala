@@ -14,7 +14,7 @@ trait Configuration {
   lazy val serviceHost = Try(config.getString("service.host")).getOrElse("localhost")
 
 
-  lazy val servicePort = 8085
+  lazy val servicePort = 8096
 
 
   lazy val dbHost = Try(config.getString("db.host")).getOrElse("localhost")

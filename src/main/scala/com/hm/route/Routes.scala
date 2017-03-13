@@ -50,12 +50,7 @@ trait Routes extends HttpService with handler with Configuration {
   }*/
   val route =
     path("add") {
-      println("inside add")
-
       add
-//      update(a)
-//      complete(""+buf)
-
     } ~ path("") {
       val rs = MysqlClient.executeQuery("insert into liveconn(servicehost,port) values('" + serviceHost + "'," + servicePort + ")")
       complete("instance added")
@@ -63,13 +58,12 @@ trait Routes extends HttpService with handler with Configuration {
 
       MysqlClient.getLiveInstances
       println(MysqlClient.map)
-      //      var request:HttpRequest=Http("")
+
       MysqlClient.map.foreach(i => {
         val request: HttpRequest = Http("http://" + i._1 + ":" + i._2 + "/listall")
         println(request)
         val response = request.asString.body
         println("RESPONSE " + response)
-
 
         val array = response.parseJson.asInstanceOf[JsArray].elements.map(_.asInstanceOf[JsNumber].value.toInt)
 
@@ -80,18 +74,9 @@ trait Routes extends HttpService with handler with Configuration {
           add1(i)
           println("res" + (i))
         })
-
-        //        println("res"+res)
-        //        complete(JsArray(res.map(JsNumber(_)).toVector).prettyPrint)
-        //  response=response.toJson
-        /* val tmp = response.parseJson.asInstanceOf[JsArray]
-           tmp.elements.foreach(i=>{
-             add1(i)
-           })
-           complete(tmp.prettyPrint)*/
       })
 
-      //tmp.elements.foreach(i=>i.asInstanceOf[JsNumber].))
+
       complete("")
 
     } ~ path("listall") {
@@ -104,46 +89,10 @@ trait Routes extends HttpService with handler with Configuration {
       complete(JsArray(array.map(JsNumber(_)).toVector).prettyPrint)
 
 
-    }~path("badd"){
-      //var e=
-        parameter("e")
-      //add1(e)
-      complete("")
+    }~path("del"){
+      del
+    } ~ path("instances") {
+      MysqlClient.updateLiveInstances
+      complete(MysqlClient.map1.toMap.map(_._1).mkString(","))
     }
-
-  // rs.map(i=>print(i._1+"  "+i._2))
-  /* val request: HttpRequest = Http("http://localhost:8080/add?e=56")
-   val response = request.asString.body
-   val tmp = response.parseJson.asInstanceOf[JsArray]
-     //tmp.elements.foreach(i=>i.asInstanceOf[JsNumber].))
-     complete(tmp.prettyPrint)
-  func*/
-
-  // complete(JsArray(a.map(i=>JsNumber(i)).toVector).prettyPrint)
-
-
-  // ~path("delete"){
-  //     deleteElement
-  //
-  //    }~path("test"){
-  //      test
-  //
-  //    }~path("list") {
-  //       list
-  //
-  ////    }~ path("") {
-  //
-  //        get {
-  //          respondWithMediaType(`text/html`) { // XML is marshalled to `text/xml` by default, so we simply override here
-  //            complete {
-  //              <html>
-  //                <body>
-  //                  <h1> welcome :)</h1>
-  //                </body>
-  //              </html>
-  //            }
-  //          }
-  //        }
-  //      }
-  //    }
 }
